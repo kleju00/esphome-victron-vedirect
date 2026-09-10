@@ -104,7 +104,9 @@ void TextSensor::parse_enum_(ENUM_DEF::enum_t enum_value) {
 }
 
 void TextSensor::parse_string_(const char *string_value) {
-  if (strcmp(this->raw_state.c_str(), string_value)) {
+  // UWAGA: property 'raw_state' nie istnieje w klasie text_sensor w nowszych wersjach ESPHome. 
+  // Podmieniono na biezacy wewnetrzny 'state'.
+  if (strcmp(this->state.c_str(), string_value)) {
     this->raw_value_ = BITMASK_DEF::VALUE_UNKNOWN;
     this->publish_state(std::string(string_value));
   }
