@@ -180,7 +180,7 @@ void Select::publish_enum_(ENUM_DEF::enum_t enum_value) {
   auto &options = this->traits_().options();
   if (options.size() != enum_def->LOOKUPS.size()) {
     // need to rebuild the whole options list since enums might be added in between
-    ESP_LOGD(TAG, "'%s': Rebuilding options (prev size %zu, new size %zu)", this->get_name().c_str(), options.size(),
+    ESP_LOGD(TAG, "Rebuilding options (prev size %zu, new size %zu)", options.size(),
              enum_def->LOOKUPS.size());
 #if ESPHOME_VERSION_CODE >= VERSION_CODE(2025, 11, 0)
     // See https://github.com/esphome/esphome/pull/11772
@@ -199,21 +199,22 @@ void Select::publish_index_(size_t index) {
   this->set_has_state(true);
 #if ESPHOME_VERSION_CODE >= VERSION_CODE(2025, 11, 0)
   this->active_index_ = index;
-  ESP_LOGD(TAG, "'%s': Sending state %s (index %zi)", this->get_name().c_str(), this->traits_().options()[index],
+  ESP_LOGD(TAG, "Sending state %s (index %zi)", this->traits_().options()[index],
            index);
 #if defined(USE_CONTROLLER_REGISTRY)
   ControllerRegistry::notify_select_update(this);
 #endif
 #else
   this->state = this->traits_().options()[index];
-  ESP_LOGD(TAG, "'%s': Sending state %s (index %zi)", this->get_name().c_str(), this->state.c_str(), index);
+  ESP_LOGD(TAG, "Sending state %s (index %zi)", this->state.c_str(), index);
 #endif
-  this->state_callback_.call(this->traits_().options()[index], index);
+  // FIX: Callback expects only the index value now
+  this->state_callback_.call(index);
 }
 
 void Select::publish_unknown_() {
   this->set_has_state(false);
-  ESP_LOGD(TAG, "'%s': Sending state 'unknown' (index %zi)", this->get_name().c_str(), static_cast<size_t>(-1));
+  ESP_LOGD(TAG, "Sending state 'unknown' (index %zi)", static_cast<size_t>(-1));
 #if ESPHOME_VERSION_CODE >= VERSION_CODE(2025, 11, 0)
   this->active_index_ = static_cast<size_t>(-1);
 #if defined(USE_CONTROLLER_REGISTRY)
@@ -222,7 +223,8 @@ void Select::publish_unknown_() {
 #else
   this->state = "unknown";
 #endif
-  this->state_callback_.call("", static_cast<size_t>(-1));
+  // FIX: Callback expects only the index value now
+  this->state_callback_.call(static_cast<size_t>(-1));
 }
 }  // namespace m3_vedirect
 }  // namespace esphome
