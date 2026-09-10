@@ -217,8 +217,10 @@ void Manager::init_entity(EntityBase *entity, const REG_DEF *reg_def, const char
       name = strdup(reg_name_buf);
     }
   }
-  entity->set_name(name);
-  entity->set_object_id(name);
+  
+  // NOTE: set_name() and set_object_id() were removed from ESPHome EntityBase
+  // entity->set_name(name);
+  // entity->set_object_id(name);
 }
 
 #if defined(VEDIRECT_USE_HEXFRAME)
@@ -403,7 +405,7 @@ void Manager::on_frame_hex_(const RxHexFrame &hexframe) {
     goto _forward_to_register;
   }
 
-  if (request = this->requests_read_) {
+  if ((request = this->requests_read_)) {
     switch (rx_command) {
       case HEXFRAME::COMMAND::Get:
       case HEXFRAME::COMMAND::Set:
@@ -493,7 +495,7 @@ void Manager::on_frame_text_(TextRecord **text_records, uint8_t text_records_cou
       textframe_value.append(text_record->value);
       textframe_value.append(",");
     }
-    if (rawtextframe->raw_state != textframe_value) {
+    if (rawtextframe->state != textframe_value) {
       rawtextframe->publish_state(textframe_value);
     }
   }
