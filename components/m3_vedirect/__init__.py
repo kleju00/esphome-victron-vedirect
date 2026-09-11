@@ -585,6 +585,6 @@ for _action_name, _schema_def in MANAGER_ACTIONS.items():
             for _schema_key, _ctype in _schema_def.items()
         }
     )
-    automation.register_action(f"m3_vedirect.{_action_name}", _action, _schema)(
-        partial(action_to_code, _schema_def)
-    )
+    automation.register_action(
+        f"m3_vedirect.{_action_name}", _action, _schema, synchronous=False
+    )(partial(action_to_code, _schema_def))
