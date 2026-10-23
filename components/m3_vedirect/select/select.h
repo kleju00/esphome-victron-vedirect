@@ -44,7 +44,7 @@ class Select final : public WritableRegister, public esphome::select::Select {
   class Traits : public esphome::select::SelectTraits {
    protected:
     friend class Select;
-    inline options_type &options() { return this->options_; }
+    inline auto &options() { return this->options_; }
   };
   /// @brief A fake SelectTraits-like implementation that discards options configuration during component setup
   /// This will be used through member hiding to avoid initial setup of the base class 'traits' member
