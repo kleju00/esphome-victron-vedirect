@@ -104,7 +104,7 @@ template<typename TKey, typename TValue> class ValueBucket : public Bucket<TKey,
   using allocator_type = Allocator;
 
   value_type bucket_value() { return static_cast<TValue *>(this); }
-  const value_type bucket_value() const { return static_cast<const TValue *>(this); }
+  value_type bucket_value() const { return static_cast<const TValue *>(this); }
 };
 
 /// @brief A (simple) Bucket implementation where the mapped object (TValue) is contained in the bucket.
