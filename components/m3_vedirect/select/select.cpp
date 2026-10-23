@@ -56,7 +56,7 @@ void Select::init_reg_def_() {
     for (auto &lookup_def : lookups) {
       options.push_back(lookup_def.label);
     }
-    this->traits.set_options(options);
+    this->traits_().set_options(options);
 #if defined(VEDIRECT_USE_HEXFRAME)
     this->parse_hex_ = parse_hex_enum_;
 #endif
@@ -80,7 +80,7 @@ void Select::parse_string_(const char *string_value) {
       this->publish_index_(index.value());
       return;
     }
-    const auto &options_old = this->traits.get_options();
+    const auto &options_old = this->traits_().options();
     size_t new_index = options_old.size();
     FixedVector<const char *> options;
     options.init(new_index + 1);
@@ -88,7 +88,7 @@ void Select::parse_string_(const char *string_value) {
       options.push_back(opt);
     }
     options.push_back(string_value);
-    this->traits.set_options(options);
+    this->traits_().set_options(options);
     this->publish_index_(new_index);
   }
 }
@@ -151,7 +151,7 @@ void Select::parse_text_enum_(Register *hex_register, const char *text_value) {
 void Select::publish_enum_(ENUM_DEF::enum_t enum_value) {
   auto enum_def = this->reg_def_->enum_def;
   auto lookup_result = enum_def->get_lookup(enum_value);
-  const auto &current_options = this->traits.get_options();
+  const auto &current_options = this->traits_().options();
   if (current_options.size() != enum_def->LOOKUPS.size()) {
     ESP_LOGD(TAG, "Rebuilding options (prev size %zu, new size %zu)", current_options.size(),
              enum_def->LOOKUPS.size());
@@ -160,7 +160,7 @@ void Select::publish_enum_(ENUM_DEF::enum_t enum_value) {
     for (auto &lookup_def : enum_def->LOOKUPS) {
       options.push_back(lookup_def.label);
     }
-    this->traits.set_options(options);
+    this->traits_().set_options(options);
   }
   this->publish_index_(lookup_result.index);
 }
@@ -169,13 +169,13 @@ void Select::publish_index_(size_t index) {
   this->set_has_state(true);
 #if ESPHOME_VERSION_CODE >= VERSION_CODE(2025, 11, 0)
   this->active_index_ = index;
-  ESP_LOGD(TAG, "Sending state %s (index %zi)", this->traits.get_options()[index],
+  ESP_LOGD(TAG, "Sending state %s (index %zi)", this->traits_().options()[index],
            index);
 #if defined(USE_CONTROLLER_REGISTRY)
   ControllerRegistry::notify_select_update(this);
 #endif
 #else
-  this->state = this->traits.get_options()[index];
+  this->state = this->traits_().options()[index];
   ESP_LOGD(TAG, "Sending state %s (index %zi)", this->state.c_str(), index);
 #endif
   this->state_callback_.call(index);
